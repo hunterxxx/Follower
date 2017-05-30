@@ -31,13 +31,9 @@ public class FollowT {
     }
     
     private void initMongo() {
-        try {
-            MongoClient client = new MongoClient();
-            DB db = client.getDB("followt");
-            fhistory = db.getCollection("fhistory");
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
+        MongoClient client = new MongoClient();
+		DB db = client.getDB("followt");
+		fhistory = db.getCollection("fhistory");
     }
     
     /**
