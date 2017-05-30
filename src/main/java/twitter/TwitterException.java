@@ -1,8 +1,9 @@
-package net.followt;
+package twitter;
 
+import java.io.IOException;
 import java.util.List;
 
-import org.scribe.model.Response;
+import com.github.scribejava.core.model.*;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
@@ -28,7 +29,13 @@ public class TwitterException extends RuntimeException {
     }
     
     public static TwitterException create (Response response) {
-        DBObject body = (DBObject)JSON.parse(response.getBody());
+        DBObject body = null;
+		try {
+			body = (DBObject)JSON.parse(response.getBody());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         BasicDBList errors = (BasicDBList)body.get("errors");
         DBObject firstError = (DBObject)errors.get(0);
         int code = (int)firstError.get("code");

@@ -3,6 +3,7 @@ package net.followt;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import twitter.Twitter;
 
 public class TwitterTest extends TestCase {
 

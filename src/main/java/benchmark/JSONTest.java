@@ -1,4 +1,4 @@
-package net.followt.benchmark;
+package benchmark;
 
 import com.mongodb.util.JSON;
 
@@ -8,5 +8,4 @@ public class JSONTest {
         Object result = JSON.parse("'blabla'");
         System.out.println(result + " " + result.getClass());
     }
-
 }

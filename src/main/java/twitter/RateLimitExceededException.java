@@ -1,4 +1,4 @@
-package net.followt;
+package twitter;
 
 import java.util.List;
 

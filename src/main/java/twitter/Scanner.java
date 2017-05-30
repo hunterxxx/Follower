@@ -1,6 +1,5 @@
-package net.followt;
+package twitter;
 
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,15 +36,11 @@ public class Scanner implements Runnable {
     }
 
     private void initMongo() {
-        try {
-            MongoClient client = new MongoClient();
-            DB db = client.getDB("followt");
-            fscans = db.getCollection("fscans");
-            fcurrent = db.getCollection("fcurrent");
-            fhistory = db.getCollection("fhistory");
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
+        MongoClient client = new MongoClient();
+		DB db = client.getDB("followt");
+		fscans = db.getCollection("fscans");
+		fcurrent = db.getCollection("fcurrent");
+		fhistory = db.getCollection("fhistory");
     }
     
     private class Scan {
@@ -163,21 +158,6 @@ public class Scanner implements Runnable {
                         new BasicDBObject("$set",new BasicDBObject("end",new Date())),
                         false, true);
     }
-    
-//    private void insert_fhistory_negative_old(int followee) {
-//        DBCursor c = fhistory.find(new BasicDBObject("followee",followee)
-//                                             .append("end",null));
-//        for (DBObject o : c) {
-//            int follower = (int)o.get("follower");
-//            DBCursor x = fcurrent.find(new BasicDBObject("followee",followee)
-//                                                 .append("follower",follower));
-//            if (!x.hasNext()) {
-//                BasicDBObject b = (BasicDBObject)o;
-//                b.put ("end",new Date());
-//                fhistory.update(new BasicDBObject("_id",b.get("_id")),b);
-//            }
-//        }
-//    }
     
     public void startMonitoring (String screenName) {
         int user_id = twitter.getId(screenName);

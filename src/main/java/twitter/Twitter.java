@@ -1,4 +1,4 @@
-package net.followt;
+package twitter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,14 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.TwitterApi;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.oauth.OAuthService;
+import com.github.scribejava.core.builder.ServiceBuilder;
+//Twitter API
+import com.github.scribejava.apis.TwitterApi;
+import com.github.scribejava.core.model.OAuth1AccessToken;
+import com.github.scribejava.core.model.OAuth1RequestToken;
+import com.github.scribejava.core.model.OAuthRequest;
+import com.github.scribejava.core.model.Response;
+import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.model.Verb;
+import com.github.scribejava.core.oauth.OAuth10aService;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
@@ -30,16 +34,15 @@ import com.mongodb.util.JSON;
  * For authorization, a file twitter.properties must be provided with four
  * values, api_key, api_secret, access_token, and access_secret. These values
  * can be obtained by registering on Twitter's developer website.
- * 
- * @author drmirror
  */
 public class Twitter {
 
     public final static int MAX_LOOKUPS = 100;
     public final static int MAX_FOLLOWER_BATCHES = 15;
-    
-    private static OAuthService oauthService;
-    private static Token accessToken;
+   
+    private static OAuth10aService service;
+    private static OAuth1AccessToken accessToken;
+    private static OAuth1RequestToken requestToken;
     
     private static Twitter instance = null;
     
@@ -49,12 +52,25 @@ public class Twitter {
      */
     private Twitter (String api_key, String api_secret,
                      String access_token, String access_secret) {
-        oauthService = new ServiceBuilder()
-            .provider(TwitterApi.class)
+        service = new ServiceBuilder()
             .apiKey(api_key)
             .apiSecret(api_secret)
-            .build();
-        accessToken = new Token (access_token, access_secret);
+            .build(TwitterApi.instance());
+        //accessToken = new Token (access_token, access_secret);
+        try {
+            requestToken = service.getRequestToken();
+			OAuth1AccessToken accessToken = service.getAccessToken(requestToken, access_secret);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
     }
     
     /**
@@ -68,7 +84,7 @@ public class Twitter {
     public DBObject request (String command) {
 
         OAuthRequest request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1.1/" + command);
-        oauthService.signRequest(accessToken, request);
+        service.signRequest(accessToken, request);
         Response response = request.send();
         if (!response.isSuccessful()) {
             throw TwitterException.create(response);
@@ -119,7 +135,7 @@ public class Twitter {
             if (i<ids.length-1) idList.append(",");
         }
         request.addBodyParameter("user_id", idList.toString());
-        oauthService.signRequest(accessToken, request);
+        service.signRequest(accessToken, request);
         Response response = request.send();
         if (!response.isSuccessful()) throw TwitterException.create(response);
         BasicDBList result = (BasicDBList)JSON.parse(response.getBody());

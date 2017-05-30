@@ -1,4 +1,4 @@
-package net.followt.benchmark;
+package benchmark;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package net.followt.benchmark;
+package benchmark;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -22,11 +22,7 @@ public abstract class SetBenchmark {
     public DBCollection getCollection (String name) {
         if (db == null) {
             MongoClient c;
-            try {
-                c = new MongoClient();
-            } catch (UnknownHostException e) {
-                throw new RuntimeException(e);
-            }
+            c = new MongoClient();
             db = c.getDB("ftest");
         }
         return db.getCollection(name);

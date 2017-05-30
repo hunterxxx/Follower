@@ -1,6 +1,5 @@
-package net.followt;
+package twitter;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -128,13 +127,9 @@ public class UserDB {
     
     private DBCollection getUserCollection() {
         if (userCollection == null) {
-            try {
-                MongoClient client = new MongoClient();
-                DB db = client.getDB("followt");
-                userCollection = db.getCollection("users");
-            } catch (UnknownHostException e) {
-                throw new RuntimeException(e);
-            }
+            MongoClient client = new MongoClient();
+			DB db = client.getDB("followt");
+			userCollection = db.getCollection("users");
         }
         return userCollection;
     }
